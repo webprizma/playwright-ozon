@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  playwright:
+    image: node:latest
+    working_dir: /app
+    volumes:
+      - ./tests:/app/tests
+      - ./playwright.config.ts:/app/playwright.config.ts
+    command: bash -c "npm i -D @playwright/test && npx playwright test || true"
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./playwright-report:/usr/share/nginx/html
+    depends_on:
+      playwright:
+        condition: service_completed_successfully
